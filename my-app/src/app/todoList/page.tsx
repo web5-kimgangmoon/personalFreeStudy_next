@@ -1,6 +1,6 @@
 "use client";
 
-import TodoList from "@/app/ui/todoList";
+import TodoList from "@/app/(ui)/todoList";
 import { TodoItem } from "../types/todoList";
 import {
   deleteTodo,

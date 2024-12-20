@@ -1,7 +1,7 @@
 "use client";
 
 import type { Metadata } from "next";
-import "./ui/globals.css";
+import "./(ui)/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // export const metadata: Metadata = {

@@ -1,5 +1,9 @@
+"use client";
+
+import { Board_main } from "../(ui)/board/main/page";
+
 const Page = () => {
-  return <div className="container">보드게시판 시작합니다</div>;
+  return <Board_main />;
 };
 
 export default Page;

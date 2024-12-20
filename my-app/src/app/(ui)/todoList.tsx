@@ -11,6 +11,7 @@ import {
 import z from "zod";
 import Link from "next/link";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/solid";
+import { ReturnRoot } from "./public/returnRoot";
 
 const TodoList = ({
   todoList,
@@ -52,12 +53,7 @@ const TodoList = ({
         </table>
       </div>
       <InputBox addItem={addItem} />
-      <div className="flex justify-center py-5">
-        <Link href={"/"} className="flex hover:underline hover:text-blue-700">
-          <strong>되돌아가기</strong>
-          <ArrowUturnLeftIcon height={"1.5rem"} className="p-1" />
-        </Link>
-      </div>
+      <ReturnRoot>되돌아가기</ReturnRoot>
     </section>
   );
 };
