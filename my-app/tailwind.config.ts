@@ -8,6 +8,7 @@ export default {
   ],
   theme: {
     extend: {
+      screens: { phone: "320px" },
       container: {
         center: true,
       },
