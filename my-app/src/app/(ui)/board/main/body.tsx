@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { TouchEvent, useCallback, useState } from "react";
 import clsx from "clsx";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { mkCreatedAtStr } from "@/app/lib/mkCreatedAtStr";
+import { PageObj } from "@/app/types/board";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { mkPageObjArr } from "@/app/lib/mkPageObjArr";
+import { Params } from "@/app/types/board";
+import { mkHref } from "@/app/lib/mkHref";
 
 export const Body = () => {
   return (
     <section className="container min-h-screen">
       <CategoryList />
       <BoardList />
+      <PageList cnt={101} limit={10} maxPage_even={6} />
     </section>
   );
 };
@@ -55,16 +61,18 @@ const CategoryList = () => {
 };
 
 const Tap = ({ href, children }: { href: string; children: string }) => {
+  const addr = usePathname();
+
   const params = useSearchParams();
   const boardId = params.get("boardId");
   const category = params.get("category");
+  const page = params.get("page");
+
+  const hrefObj: Params = { category: href, boardId, page };
+
   return (
     <Link
-      href={
-        href === ""
-          ? "/board" + (boardId ? `?boardId=${boardId}` : "")
-          : `/board?category=${href}` + (boardId ? `&boardId=${boardId}` : "")
-      }
+      href={mkHref(addr, hrefObj)}
       className={clsx(
         "px-2 py-1 text-nowrap",
         ((!category && href === "") || category == href) &&
@@ -131,9 +139,15 @@ const BoardItem = ({
   looks: number;
   recommendCnt: number;
 }) => {
+  const addr = usePathname();
   const params = useSearchParams();
+
   const boardId = params.get("boardId");
   const category = params.get("category");
+  const page = params.get("page");
+
+  const hrefObj: Params = { category, boardId: id, page };
+
   return (
     <li>
       <Link
@@ -141,11 +155,7 @@ const BoardItem = ({
           "border-b border-board_gray py-1 px-2 flex flex-col gap-1",
           Number(boardId) === id && "bg-selected"
         )}
-        href={
-          category
-            ? `/board?category=${category}&boardId=${id}`
-            : `/board?boardId=${id}`
-        }
+        href={mkHref(addr, hrefObj)}
       >
         <div className="flex items-center">
           <div className={clsx("py-1 pr-2", !categoryBox && "hidden")}>
@@ -172,5 +182,107 @@ const BoardItem = ({
         </div>
       </Link>
     </li>
+  );
+};
+
+const PageList = ({
+  limit,
+  cnt,
+  maxPage_even,
+}: {
+  limit: number;
+  cnt: number;
+  maxPage_even: number;
+}) => {
+  const addr = usePathname();
+  const params = useSearchParams();
+  const category = params.get("category");
+  const page: string | null | number = params.get("page");
+
+  let boardId: string | null | number = params.get("boardId");
+  boardId = boardId ? +boardId : null;
+
+  const arr = mkPageObjArr(cnt, limit, maxPage_even, page ? +page : 1);
+  return (
+    <ol className="py-2 flex justify-center">
+      {arr.map((target, idx) => (
+        <PageItem
+          {...target}
+          isFirst={idx === 0 ? true : false}
+          key={target.itemStr}
+          addr={addr}
+          boardId={boardId}
+          category={category}
+        />
+      ))}
+    </ol>
+  );
+};
+
+const PageItem = ({
+  isSelected,
+  // type,
+  NoBorder,
+  itemStr,
+  isFirst,
+  addr,
+  boardId,
+  category,
+  page,
+}: PageObj & {
+  isFirst?: boolean;
+  addr: string;
+  boardId: number | null;
+  category: string | null;
+  page: number;
+}) => {
+  const hrefObj: Params = { category, boardId, page };
+
+  return (
+    <li>
+      <Link
+        href={mkHref(addr, hrefObj)}
+        className={clsx(
+          "flex justify-center items-center py-1 w-8 h-8 border",
+          isSelected
+            ? "border-selected_border bg-selected"
+            : "border-boardGray",
+          !isFirst && !isSelected && "border-l-0",
+          // NoBorder === "right" && "border-r-0"
+          NoBorder === true
+        )}
+      >
+        {!Number.isNaN(Number(itemStr)) ? (
+          itemStr
+        ) : (
+          <PageArrow itemStr={itemStr} />
+        )}
+      </Link>
+    </li>
+  );
+};
+
+const PageArrow = ({
+  itemStr,
+}: {
+  itemStr: "LBack" | "back" | "front" | "LFront" | number;
+}) => {
+  return (
+    <>
+      {itemStr === "back" && <ArrowLeftIcon className="w-full h-full p-1" />}
+      {itemStr === "front" && <ArrowRightIcon className="w-full h-full p-1" />}
+      {itemStr === "LBack" && (
+        <div className="flex px-1">
+          <ArrowLeftIcon className="w-full h-full" />
+          <ArrowLeftIcon className="w-full h-full" />
+        </div>
+      )}
+      {itemStr === "LFront" && (
+        <div className="flex px-1">
+          <ArrowRightIcon className="w-full h-full" />
+          <ArrowRightIcon className="w-full h-full" />
+        </div>
+      )}
+    </>
   );
 };
