@@ -17,7 +17,7 @@ export default {
         foreground: "var(--foreground)",
         inactive: "#666666",
         selected: "#EEEEEE",
-        selected_border: "00A495",
+        selected_border: "#00A495",
         board_gray: "#BBBBBB",
         footer: "#F5F5F5",
         header: "#3D414D",
