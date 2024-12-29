@@ -5,15 +5,20 @@ import Todo from "@/app/(db)/todo";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
+export async function HEAD(request: Request) {
+  await sequelize.sync({ force: true });
+}
+
 // export async function OPTIONS() {
 //   try {
 //     await sequelize.sync();
+//     return;
 //   } catch (error) {}
 // }
 
 export async function GET() {
   try {
-    await sequelize.sync();
+    // await sequelize.sync();
     return Todo["findAll"]().then((data) =>
       Response.json({ data }, { status: 200 })
     );

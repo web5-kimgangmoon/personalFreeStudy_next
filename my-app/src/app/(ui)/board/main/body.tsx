@@ -249,7 +249,7 @@ const PageItem = ({
             : "border-boardGray",
           !isFirst && !isSelected && "border-l-0",
           // NoBorder === "right" && "border-r-0"
-          NoBorder === true
+          NoBorder === true && "border-r-0"
         )}
       >
         {!Number.isNaN(Number(itemStr)) ? (
