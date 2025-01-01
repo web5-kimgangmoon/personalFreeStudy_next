@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       {
         model: Category,
         as: "category",
-        where: category === null ? undefined : { title: category },
+        where: category === null ? undefined : { href: category },
       },
       {
         model: Recommend,
@@ -83,8 +83,16 @@ export async function GET(request: NextRequest) {
           target.get("recommend").length -
           target.get("recommend").filter((item) => !item.get("isRecommend"))
             .length,
+        categoryHref: target.get("category").get("href"),
+        categoryTitle: target.get("category").get("title"),
       })),
-      boardCnt: await Board.count(),
+      boardCnt: await Board.count({
+        include: {
+          model: Category,
+          as: "category",
+          where: category === null ? undefined : { href: category },
+        },
+      }),
     },
     { status: 200 }
   );
