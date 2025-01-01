@@ -9,17 +9,39 @@ import { mkPageObjArr } from "@/app/lib/mkPageObjArr";
 import { Params } from "@/app/types/board";
 import { mkHref } from "@/app/lib/mkHref";
 
-export const Body = () => {
+export const Body = ({
+  categories,
+  boards,
+  boardCnt,
+}: {
+  categories: { href: string; title: string }[];
+  boards: {
+    id: number;
+    createdAt: Date;
+    title: string;
+    cmtCnt: number;
+    nick: string;
+    looks: number;
+    recommend: number;
+    categoryHref: string;
+    categoryTitle: string;
+  }[];
+  boardCnt: number;
+}) => {
   return (
     <section className="container min-h-screen">
-      <CategoryList />
-      <BoardList />
-      <PageList cnt={101} limit={10} maxPage_even={6} />
+      <CategoryList categories={categories} />
+      <BoardList boards={boards} />
+      <PageList cnt={boardCnt} limit={10} maxPage_even={6} />
     </section>
   );
 };
 
-const CategoryList = () => {
+const CategoryList = ({
+  categories,
+}: {
+  categories: { href: string; title: string }[];
+}) => {
   const [moved, setMoved] = useState(0);
   const [moveStart, setMoveStart] = useState(0);
   const touchStart = useCallback((e: TouchEvent<HTMLUListElement>) => {
@@ -49,11 +71,12 @@ const CategoryList = () => {
           onTouchMove={touchMove}
           onTouchEnd={touchEnd}
         >
-          <Tap href="">전체</Tap>
-          <Tap href="what">어떤탭</Tap>
-          <Tap href="info">정보</Tap>
-          <Tap href="question">질문</Tap>
-          <Tap href="just">그냥있음</Tap>
+          <Tap href={""}>전체</Tap>
+          {categories.map((target) => (
+            <Tap href={target.href} key={target.href}>
+              {target.title}
+            </Tap>
+          ))}
         </ul>
       </div>
     </div>
@@ -69,13 +92,12 @@ const Tap = ({ href, children }: { href: string; children: string }) => {
   const page = params.get("page");
 
   const hrefObj: Params = { category: href, boardId, page };
-
   return (
     <Link
       href={mkHref(addr, hrefObj)}
       className={clsx(
         "px-2 py-1 text-nowrap",
-        ((!category && href === "") || category == href) &&
+        ((!category && href === "") || category === href) &&
           "font-bold border border-board_gray border-b-0 relative before:absolute before:bottom-[-2px] before:left-0 before:w-full before:h-[3px] before:bg-white"
       )}
     >
@@ -84,38 +106,38 @@ const Tap = ({ href, children }: { href: string; children: string }) => {
   );
 };
 
-const BoardList = () => {
+const BoardList = ({
+  boards,
+}: {
+  boards: {
+    id: number;
+    createdAt: Date;
+    title: string;
+    cmtCnt: number;
+    nick: string;
+    looks: number;
+    recommend: number;
+    categoryHref: string;
+    categoryTitle: string;
+  }[];
+}) => {
   return (
     <ul>
-      <BoardItem
-        id={1}
-        createdAt={Date.now()}
-        categoryBox="정보"
-        content="보급품 정도는 원격으로 받을 수 있게 해다요"
-        cmtCnt={5}
-        writer="펜잘중독자"
-        looks={5}
-        recommendCnt={0}
-      />
-      <BoardItem
-        id={2}
-        createdAt={Date.now() - 3600000}
-        content="보급품 정도는 원격으로 받을 수 있게 해다요"
-        cmtCnt={0}
-        writer="펜잘중독자"
-        looks={5}
-        recommendCnt={0}
-      />
-      <BoardItem
-        id={3}
-        createdAt={20}
-        categoryBox="정보"
-        content="보급품 정도는 원격으로 받을 수 있게 해다요"
-        cmtCnt={5}
-        writer="펜잘중독자"
-        looks={5}
-        recommendCnt={0}
-      />
+      {boards.map((target) => (
+        <BoardItem
+          id={target.id}
+          key={target.id}
+          createdAt={target.createdAt}
+          categoryBox={
+            target.categoryHref === "inform" ? "" : target.categoryTitle
+          }
+          content={target.title}
+          cmtCnt={target.cmtCnt}
+          writer={target.nick}
+          looks={target.looks}
+          recommendCnt={target.recommend}
+        ></BoardItem>
+      ))}
     </ul>
   );
 };
@@ -135,7 +157,7 @@ const BoardItem = ({
   categoryBox?: string;
   cmtCnt: number;
   writer: string;
-  createdAt: number;
+  createdAt: Date;
   looks: number;
   recommendCnt: number;
 }) => {
@@ -174,7 +196,7 @@ const BoardItem = ({
           <div className="font-bold">{writer}</div>
           <div className="flex">
             <div className="px-2 border-r-2 border-inactive">
-              {mkCreatedAtStr(createdAt)}
+              {mkCreatedAtStr(new Date(createdAt).getTime())}
             </div>
             <div className="px-2 border-r-2 border-inactive">조회 {looks}</div>
             <div className="px-2">추천 {recommendCnt}</div>
@@ -236,6 +258,7 @@ const PageItem = ({
   category: string | null;
   page: number;
 }) => {
+  console.log(addr);
   const hrefObj: Params = { category, boardId, page };
 
   return (

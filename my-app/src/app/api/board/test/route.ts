@@ -8,20 +8,14 @@ import Recommend from "@/app/(db)/board/recommend";
 import User from "@/app/(db)/board/user";
 import { encryptPWD } from "@/app/lib/encryptPWD";
 
-export async function OPTIONS() {
-  //   try {
-  //   } catch (error) {}
-  await boardSequelize.sync({ force: true });
-  return;
-}
-
 export async function GET() {
   try {
-    await Category.create({ title: "어떤탭" });
-    await Category.create({ title: "정보" });
-    await Category.create({ title: "질문" });
-    await Category.create({ title: "그냥있음" });
-    await Category.create({ title: "공지" });
+    await boardSequelize.sync({ force: true });
+    await Category.create({ title: "어떤탭", href: "what" });
+    await Category.create({ title: "정보", href: "info" });
+    await Category.create({ title: "질문", href: "question" });
+    await Category.create({ title: "그냥있음", href: "just" });
+    await Category.create({ title: "공지", href: "inform" });
 
     await User.create({
       nick: "운영자",

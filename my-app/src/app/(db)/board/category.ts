@@ -7,6 +7,7 @@ import {
   NotNull,
   PrimaryKey,
   Table,
+  Unique,
 } from "sequelize-typescript";
 import Board from "./board";
 
@@ -24,6 +25,11 @@ export default class Category extends Model {
   @NotNull
   @Column({ type: DataType.CHAR(20), allowNull: false })
   title!: string;
+
+  @NotNull
+  @Unique
+  @Column({ type: DataType.CHAR(20), allowNull: false })
+  href!: string;
 
   @HasMany(() => Board)
   board!: Board[];
