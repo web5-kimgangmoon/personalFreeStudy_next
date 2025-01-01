@@ -3,7 +3,7 @@ export const mkCreatedAtStr = (createdAt: number) => {
 
   if (gap < 3600000) return `${Math.floor(gap / 60000)}분 전`;
   if (gap < 3600000 * 24) return `${Math.floor(gap / 3600000)}시간 전`;
-  if (gap < 3600000 * 24 * 7) return `${gap / 3600000 / 24}일 전`;
+  if (gap < 3600000 * 24 * 7) return `${Math.floor(gap / 3600000 / 24)}일 전`;
 
   const createdAtDate = new Date(createdAt);
   if (gap < 3600000 * 24 * 365)
